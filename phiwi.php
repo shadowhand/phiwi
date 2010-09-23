@@ -57,7 +57,7 @@ class Phiwi {
 
 		if ($methods)
 		{
-			self::$prototypes[$name]->methods = array_merge(self::$prototypes[$name]->methods, $methods);
+			self::$prototypes[$name]->_methods = array_merge(self::$prototypes[$name]->_methods, $methods);
 		}
 
 		return self::$prototypes[$name];
@@ -122,7 +122,7 @@ class Phiwi {
 	/**
 	 * @var  array  class method (closure) storage
 	 */
-	public $methods = array();
+	public $_methods = array();
 
 	/**
 	 * Passes all class method calls into closure calls.
@@ -137,13 +137,13 @@ class Phiwi {
 	 */
 	public function __call($name, array $args)
 	{
-		if ( ! isset($this->methods[$name]))
+		if ( ! isset($this->_methods[$name]))
 			throw new BadMethodCallException;
 
 		// Closures cannot access $this
 		array_unshift($args, $this);
 
-		return call_user_func_array($this->methods[$name], $args);
+		return call_user_func_array($this->_methods[$name], $args);
 	}
 
 	/**
@@ -165,11 +165,11 @@ class Phiwi {
 			$class = Phiwi::factory($class);
 		}
 
-		foreach ($class->methods as $name => $method)
+		foreach ($class->_methods as $name => $method)
 		{
 			// Use references to ensure that changes to the imported
 			// method will carry over the the base class.
-			$this->methods[$name] =& $class->methods[$name];
+			$this->_methods[$name] =& $class->_methods[$name];
 		}
 
 		$vars = get_object_vars($class);
