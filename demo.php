@@ -50,3 +50,29 @@ Phiwi::extend('cat', 'animal', array(
 $fluffy = Phiwi::factory('cat', 'Fluffy');
 
 echo $fluffy->speak();
+
+Phiwi::proto('house', array(
+		'init' => function($self) {
+			$self->has_door = TRUE;
+		},
+		'move' => function($self, $location) {
+			return "Calling the movers to go to {$location}!\n";
+		},
+	));
+
+Phiwi::proto('boat', array(
+		'init' => function($self) {
+			$self->has_sail = TRUE;
+		},
+		'move' => function($self, $location) {
+			return "Setting sail for {$location}!\n";
+		},
+	));
+
+$house = Phiwi::factory('house')
+	->mixin('boat');
+
+echo "Does my house have a sail? ", empty($house->has_sail) ? "No :(" : "Yes :D", "\n";
+echo "Does my house have a door? ", empty($house->has_door) ? "No :(" : "Yes :D", "\n";
+
+echo $house->move('Jamaica');
