@@ -146,4 +146,43 @@ class Phiwi {
 		return call_user_func_array($this->methods[$name], $args);
 	}
 
+	/**
+	 * Mix another class into this class. Any duplicate class methods and
+	 * properties will be replaced by the mixed class.
+	 *
+	 *     $joe->mixin($bob);
+	 *
+	 * Mixed in classes do not need to have the same prototype!
+	 *
+	 * @param   mixed  mixed in class, or prototyped class name
+	 * @return  $this
+	 * @uses    Phiwi::factory
+	 */
+	public function mixin($class)
+	{
+		if ( ! is_object($class))
+		{
+			$class = Phiwi::factory($class);
+		}
+
+		foreach ($class->methods as $name => $method)
+		{
+			// Use references to ensure that changes to the imported
+			// method will carry over the the base class.
+			$this->methods[$name] =& $class->methods[$name];
+		}
+
+		$vars = get_object_vars($class);
+
+		foreach ($vars as $var => $value)
+		{
+			if ($var[0] !== '_')
+			{
+				$this->$var = $value;
+			}
+		}
+
+		return $this;
+	}
+
 } // End Phiwi
